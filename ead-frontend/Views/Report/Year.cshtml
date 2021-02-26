@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Request Counts";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>Submitted/Completed Request Counts</h2>
+@if (ViewBag.Start != string.Empty)
+{
+<div class="alert alert-info">
+    <i class="fa fa-eye"></i> Viewing @ViewBag.Collection @ViewBag.StartMonth/@ViewBag.StartYear - @ViewBag.EndMonth/@ViewBag.EndYear
+</div>
+}
+<hr />
+<div class="row text-center">
+    <div style="width:100%;height:100%">
+        <canvas id="myChart" style="padding: 0;margin: auto;display: block;"></canvas>
+    </div>
+</div>
+<button onclick="PrintImage()" class="btn btn-info">Print Chart</button>
+<hr />
+<h3>Refine</h3>
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <label for="collection">Choose Repository</label>
+        <select class="form-control col-md-6" id="CollectionList" name="CollectionList">
+            <option value="All Repositories">All Repositories</option>
+            <option value="Manuscript Collection">Manuscript Collection</option>
+            <option value="University Archives">University Archives</option>
+            <option value="Laupus History Collections">Laupus History Collections</option>
+            <option value="Country Doctor Museum">Country Doctor Museum</option>
+            <option value="Books">Books</option>
+            <option value="Joyner">Joyner Repositories</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Start Year/Month</label>
+        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+            <input id="year" name="year" type="text" class="form-control datetimepicker-input col-md-4" data-target="#datetimepicker1" />
+            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+        </div>
+        <div class="small text-muted">* minimum date 12/2019</div>
+    </div>
+    <div class="form-group">
+        <label>End Year/Month</label>
+        <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+            <input id="year2" name="year2" type="text" class="form-control datetimepicker-input col-md-4" data-target="#datetimepicker2" />
+            <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Chart</button>
+    <input id="collHidden" type="hidden" value="@ViewBag.Collection" />
+    <input id="startyearHidden" type="hidden" value="@ViewBag.StartYear" />
+    <input id="startmonthHidden" type="hidden" value="@ViewBag.StartMonth" />
+    <input id="endyearHidden" type="hidden" value="@ViewBag.EndYear" />
+    <input id="endmonthHidden" type="hidden" value="@ViewBag.EndMonth" />
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/chart")
+    @Scripts.Render("~/bundles/datetimepicker")
+    @Styles.Render("~/Content/datetimepicker")
+    @Styles.Render("~/Content/fontawesome")
+
+<script type="text/javascript">
+        $(function() {
+            $('#datetimepicker1').datetimepicker({
+                viewMode: 'years',
+                format: 'MM/YYYY',
+                minDate: '2019-12',
+                defaultDate: new Date(new Date().getFullYear(), 0, 1),
+                allowInputToggle: true
+            });
+        });
+        $(function () {
+            $('#datetimepicker2').datetimepicker({
+                viewMode: 'years',
+                format: 'MM/YYYY',
+                maxDate: new Date(),
+                defaultDate: new Date(),
+                allowInputToggle: true
+            });
+        });
+        function PrintImage() {
+            var canvas = document.getElementById("myChart");
+            var win = window.open();
+            win.document.write("<br><img src='" + canvas.toDataURL() + "'/>");
+            win.print();
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetYearChart", "Report")' + '?repo=' + $("#collHidden").val() + '&startyear=' + $("#startyearHidden").val() + '&startmonth=' + $("#startmonthHidden").val() + '&endyear=' +$("#endyearHidden").val() + '&endmonth=' + $("#endmonthHidden").val(),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (chData) {
+                var aData = chData;
+                var aLabels = aData[0];
+                var aDatasets1 = aData[1];
+                var aDatasets2 = aData[2];
+                var dataT = {
+                    labels: aLabels,
+                    datasets: [{
+                            label: "Submitted",
+                            data: aDatasets1,
+                            fill: false,
+                            backgroundColor: ["rgba(255, 99, 132)"],
+                            borderColor: ["rgb(255, 99, 132)"]
+                        },
+                        {
+                            label: "Completed",
+                            data: aDatasets2,
+                            fill: false,
+                            backgroundColor: ["rgba(75, 192, 192)"],
+                            borderColor: ["rgb(75, 192, 192)"]
+                        }]
+                };
+                var ctx = $("#myChart").get(0).getContext("2d");
+                var myNewChart = new Chart(ctx, {
+                    type: 'line',
+                    data: dataT,
+                    options: {
+                        responsive: true,
+                        title: { display: true, text: @ViewBag.StartMonth + '/' + @ViewBag.StartYear + '-' + @ViewBag.EndMonth + '/' + @ViewBag.EndYear + ' Submitted/Completed Request Counts' },
+                        legend: { position: 'bottom' },
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Month'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Request Count'
+                                },
+                                ticks: {
+                                    stepSize: 5
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+        });
+</script>
+}

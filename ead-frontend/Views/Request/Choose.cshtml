@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewBag.Title = "Choose";
+}
+
+<h2>Request Onsite Use</h2>
+<hr/>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-lock"></i>  Login
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">ECU Affiliate</h5>
+                <p class="card-text">ECU Affiliates can login with their PirateID and password to request material for onsite use.</p>
+                <a href="@Url.Action("Affiliate", "Request", new { title = Request.QueryString["title"], identifier = Request.QueryString["identifier"], location = Request.QueryString["location"]})" class="btn btn-primary">Login</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-sign-in"></i> Continue
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Non-ECU Affiliate</h5>
+                <p class="card-text">Non-ECU Affiliates can request material for onsite use by clicking the continue button below.</p>
+                @if (Request.QueryString["location"] == null)
+                {
+                    <a href="@Url.Action("Select", "Request", new {title = Request.QueryString["title"], identifier = Request.QueryString["identifier"]})" class="btn btn-primary">Continue</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Submit", "Request", new {title = Request.QueryString["title"], identifier = Request.QueryString["identifier"], location = Request.QueryString["location"]})" class="btn btn-primary">Continue</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

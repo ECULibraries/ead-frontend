@@ -1,0 +1,149 @@
+﻿$purple: #41215e;
+$gold: #fec923;
+$oldpurple: #592a8a;
+
+body {
+    padding-bottom: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+.btn {
+    font-size: .9rem;
+    font-weight: 500;
+}
+a {
+    color: #0e6cd1;
+}
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* _Layout.cshtml */
+.bg-dark {
+    background-color: $purple !important;
+    font-size: .9rem;
+}
+
+#ecu-logo {
+    img {
+        height: 45px;
+    }
+
+    position: absolute;
+    top: 2px;
+}
+
+.quicksand {
+    font-family: 'Quicksand', sans-serif;
+}
+.navbar-dark .navbar-nav .nav-link {
+    color: #ffffff;
+}
+
+#ecu-footer-name {
+    font-weight: bold;
+}
+
+#ecu-footer-contact {
+    font-size: 80%;
+}
+
+/* Guide */
+.gray { background-color: #eaeaea; }
+
+#left {
+    position: sticky;
+    top: 150px;
+    bottom: 0;
+}
+
+.table-small th, .table-small td {
+    font-size: .9rem;
+}
+
+.anchor {
+    display: block;
+    height: 80px; /*same height as header*/
+    margin-top: -80px; /*same height as header*/
+    visibility: hidden;
+}
+
+:not(.collapsed) .plus-minus:after {
+    font-family: FontAwesome;
+    content: "\f077";
+    color: blue;
+}
+.collapsed .plus-minus:after {
+    font-family: FontAwesome;
+    content: "\f078";
+    color: blue;
+
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+
+#scopecontent a.collapsed:after {
+    content: '+ Show More';
+}
+
+#scopecontent a:not(.collapsed):after {
+    content: '- Show Less';
+}
+
+mark {
+    background: #f1c40f;
+}
+
+.sticky-footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: #dddddd;
+    border-top: 2px solid #3c3c3c;
+    text-align: center;
+}
+
+.code { color: #fff; }
+
+@media print {
+    div {
+        display: block !important;
+        width: auto !important;
+        float: none !important;
+        position: static !important;
+        overflow: visible !important;
+    }
+    #sub-nav {
+        display: none !important;
+    }
+
+    .sticky-top {
+        position: relative !important;
+    }
+
+    #left-nav, #left {
+        display: none !important;
+    }
+
+    #right-nav {
+        max-width: 100% !important;
+    }
+
+    .call-slip {
+        page-break-after: always;
+        &:last-child { page-break-after: unset; }
+    }
+    
+    .print-back, footer {
+        display: none !important;
+    }
+    .code {
+        color: #000;
+    }
+}

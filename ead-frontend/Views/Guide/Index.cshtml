@@ -1,0 +1,433 @@
+﻿@using System.Xml
+@using ead_frontend.Models
+@model ead_frontend.Models.GuideModel
+
+@{
+    ViewBag.Title = Model.Title;
+}
+
+<div class="row">
+    <div id="left-nav" class="col-md-3 d-none d-md-block d-xl-block">
+        <div id="left">
+            <div id="list-example" class="list-group small">
+                <a class="list-group-item list-group-item-action" href="#overview">Collection overview</a>
+
+                @if (Model.BiogHist.Count > 0)
+                {
+                    <a class="list-group-item list-group-item-action" href="#bioghist">Biographical/historical information</a>
+                }
+                @if (Model.ScopeContent.Count > 0)
+                {
+                    <a href="#scope" class="list-group-item list-group-item-action">Scope and arrangement</a>
+                }
+                @if (Model.Arrangement.Count > 0)
+                {
+                    <a href="#arrangement" class="list-group-item list-group-item-action">Arrangement</a>
+                }
+                <a href="#administrative" class="list-group-item list-group-item-action">Administrative information</a>
+                @if (Model.LangMaterial != null)
+                {
+                    <a href="#lang" class="list-group-item list-group-item-action">Language of material</a>
+                }
+                @if (Model.RelatedMaterial.Count > 0)
+                {
+                    <a href="#related" class="list-group-item list-group-item-action">Related material</a>
+                }
+                @if (Model.SeparatedMaterial.Count > 0)
+                {
+                    <a href="#separated" class="list-group-item list-group-item-action">Separated material</a>
+                }
+                @if (Model.PersName.Count > 0 || Model.GeogName.Count > 0 || Model.Subject.Count > 0 || Model.CorpName.Count > 0 || Model.UniformTitle.Count > 0 || Model.FamName.Count > 0 || Model.Meeting.Count > 0)
+                {
+                    <a href="#terms" class="list-group-item list-group-item-action">Key terms</a>
+                }
+                @if (Model.ContainerList.Count > 0)
+                {
+                    <a href="#list" class="list-group-item list-group-item-action">Container list</a>
+                }
+
+            </div>
+
+            @if (Model.HasDigitizedContent)
+            {
+                <a href="@Model.DigitizedUrl" class="btn btn-outline-primary mt-4"><i class="fa fa-camera" aria-hidden="true"></i> Portions of this collection are digitized @Model.DigitalCount</a>
+            }
+
+            <div class="mt-3">
+                <a href="#" class="btn btn-outline-primary w-100" onclick="window.print();return false;">
+                    <i class="fa fa-print" aria-hidden="true"></i> Print Finding Aid
+                </a>
+            </div>
+
+            <div class="mt-3">
+                <a href="@Url.Action("Choose", "Request", new { title = Model.Title, identifier = Model.EadId})" class="btn btn-outline-primary w-100">
+                    <i class="fa fa-archive" aria-hidden="true"></i> Request Onsite Use
+                </a>
+            </div>
+        </div>
+
+    </div>
+    <div id="right-nav" class="col-md-9">
+
+        <div class="sticky-top bg-white pb-3" style="z-index: 10">
+            <h2 class="mb-1">@Model.Title</h2>
+            <h5 class="mb-1">@Model.Date</h5>
+            <span>@Model.Subtitle</span>
+        </div>
+
+        <div class="d-block d-md-none d-lg-none d-xl-none">
+            @if (Model.HasDigitizedContent)
+            {
+                <a href="@Model.DigitizedUrl" class="btn btn-outline-primary mt-4 w-100"><i class="fa fa-camera" aria-hidden="true"></i> Portions of this collection are digitized @Model.DigitalCount</a>
+            }
+
+            <div class="mt-3">
+                <a href="#" class="btn btn-outline-primary w-100" onclick="window.print();return false;">
+                    <i class="fa fa-print" aria-hidden="true"></i> Print Finding Aid
+                </a>
+            </div>
+
+            <div class="mt-3">
+                <a href="@Url.Action("Choose", "Request", new { title = Model.Title, identifier = Model.EadId})" class="btn btn-outline-primary w-100">
+                    <i class="fa fa-archive" aria-hidden="true"></i> Request Onsite Use
+                </a>
+            </div>
+        </div>
+
+        <span class="anchor" id="overview"></span>
+        <div class="card mb-4 mt-3">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-md-3">Creator(s)</dt>
+                    <dd class="col-md-9">@Model.Creator</dd>
+                    <dt class="col-md-3">Physical description</dt>
+                    <dd class="col-md-9">@Model.PhysDesc</dd>
+                    <dt class="col-md-3">Preferred Citation</dt>
+                    <dd class="col-md-9">@Model.Citation</dd>
+                    <dt class="col-md-3">Repository</dt>
+                    <dd class="col-md-9">@Model.Repository</dd>
+                    <dt class="col-md-3">Access</dt>
+                    <dd class="col-md-9">@Model.Access</dd>
+                </dl>
+            </div>
+        </div>
+        <div>
+            <p>@Html.Raw(Model.Abstract)</p>
+        </div>
+        <hr />
+        
+        @if (Model.BiogHist.Count > 0)
+        {
+            <span class="anchor" id="bioghist"></span>
+            <div class="mt-4">
+                <h5 class="text-uppercase font-weight-bold">Biographical/historical information</h5>
+                @for (var i = 0; i < Model.BiogHist.Count; i++)
+                {
+                    <p>@Html.Raw(Model.BiogHist[i].InnerXml)</p>
+                }
+            </div>
+            <hr />
+        }
+
+        @if (Model.ScopeContent.Count > 0)
+        {
+            <span class="anchor" id="scope"></span>
+            <div id="scopecontent" class="mt-4">
+                <h5 class="text-uppercase font-weight-bold">Scope and arrangement</h5>
+                <p>@Model.ScopeContent[0].InnerText</p>
+                @for (var i = 1; i < Model.ScopeContent.Count; i++)
+                {
+                    <p>@Html.Raw(Model.ScopeContent[i].InnerXml)</p>
+                }
+            </div>
+            <hr />
+        }
+        @if (Model.Arrangement.Count > 0)
+        {
+            <span class="anchor" id="arrangement"></span>
+            <div id="arrangement" class="mt-4">
+                <h5 class="text-uppercase font-weight-bold">Arrangement</h5>
+                <p>@Model.Arrangement[0].InnerText</p>
+                @for (var i = 1; i < Model.Arrangement.Count; i++)
+                {
+                    <p>@Html.Raw(Model.Arrangement[i].InnerXml)</p>
+                }
+            </div>
+            <hr />
+        }
+        <span class="anchor" id="administrative"></span>
+        <div class="mt-4">
+            <h5 class="text-uppercase font-weight-bold">Administrative information</h5>
+
+            @if (Model.Accessions.Count > 0)
+            {
+                <h5 class="text-uppercase font-weight-bold text-muted">Custodial History</h5>
+                for (var i = 0; i < Model.Accessions.Count; i++)
+                {
+                    <p>@Html.Raw(Model.Accessions[i].InnerXml)</p>
+                }
+            }
+
+            @if (Model.Acquisitions.Count > 0)
+            {
+                <h5 class="text-uppercase font-weight-bold text-muted">Source of acquisition</h5>
+                for (var i = 0; i < Model.Acquisitions.Count; i++)
+                {
+                    <p>@Model.Acquisitions[i].InnerText</p>
+                }
+            }
+
+            @if (Model.Processing.Count > 0)
+            {
+                <h5 class="text-uppercase font-weight-bold text-muted">Processing information</h5>
+                for (var i = 0; i < Model.Processing.Count; i++)
+                {
+                    <p>@Model.Processing[i].InnerText</p>
+                }
+            }
+
+            @if (Model.Copyright.Count > 0)
+            {
+                <h5 class="text-uppercase font-weight-bold text-muted">Copyright notice</h5>
+                for (var i = 0; i < Model.Copyright.Count; i++)
+                {
+                    <p>@Model.Copyright[i].InnerText</p>
+                }
+            }
+
+
+            @if (Model.OddList != null && Model.OddList.Count > 0)
+            {
+                foreach (var oddity in Model.OddList)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted">@oddity.Head</h5>
+                    foreach (var p in oddity.Paragraphs)
+                    {
+                        <p>@p</p>
+                    }
+                }
+            }
+        </div>
+        <hr />
+
+        @if (Model.LangMaterial != null)
+        {
+            <span class="anchor" id="lang"></span>
+            <div class="mt-4">
+                <h5 class="text-uppercase font-weight-bold">Language of material</h5>
+                <p>@Model.LangMaterial.InnerText</p>
+            </div>
+        }
+
+        @if (Model.RelatedMaterial != null && Model.RelatedMaterial.Count > 0)
+        {
+            <span class="anchor" id="related"></span>
+            <div class="mt-4">
+                <h5 class="text-uppercase font-weight-bold">Related material</h5>
+                @foreach (XmlNode p in Model.RelatedMaterial)
+                {
+                    <p>@Html.Raw(p.InnerXml.Replace("<archref type=\"simple\"", "<a").Replace("</archref>", "</a>"))</p>
+                }
+
+            </div>
+            <hr />
+
+        }
+    
+    @if (Model.SeparatedMaterial != null && Model.SeparatedMaterial.Count > 0)
+    {
+        <span class="anchor" id="separated"></span>
+        <div class="mt-4">
+            <h5 class="text-uppercase font-weight-bold">Separated Material</h5>
+            @foreach (XmlNode p in Model.SeparatedMaterial)
+            {
+                <p>@Html.Raw(p.InnerXml.Replace("<archref type=\"simple\"", "<a").Replace("</archref>", "</a>"))</p>
+            }
+
+        </div>
+        <hr />
+
+    }
+
+    @if (Model.PersName.Count > 0 || Model.GeogName.Count > 0 || Model.Subject.Count > 0 || Model.CorpName.Count > 0 || Model.UniformTitle.Count > 0 || Model.FamName.Count > 0 || Model.Meeting.Count > 0)// || Model.Spatial.Count > 0
+        {
+            <span class="anchor" id="terms"></span>
+            <div class="mt-4">
+                <h5 class="text-uppercase font-weight-bold">Key terms</h5>
+
+                @if (Model.PersName.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted">Personal Names</h5>
+                    for (var i = 0; i < Model.PersName.Count; i++)
+                    {
+                        @Model.PersName[i].InnerText<br />
+                    }
+                }
+                @if (Model.FamName.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted mt-4">Family Names</h5>
+                    for (var i = 0; i < Model.FamName.Count; i++)
+                    {
+                        @Model.FamName[i].InnerText<br />
+                    }
+                }
+                @if (Model.CorpName.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted mt-4">Corporate Names</h5>
+                    for (var i = 0; i < Model.CorpName.Count; i++)
+                    {
+                        @Model.CorpName[i].InnerText<br />
+                    }
+                }
+                @if (Model.Meeting.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted mt-4">Meeting Names</h5>
+                    for (var i = 0; i < Model.Meeting.Count; i++)
+                    {
+                        @Model.Meeting[i].InnerText<br />
+                    }
+                }
+                @if (Model.Subject.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted mt-4">Topical</h5>
+                    for (var i = 0; i < Model.Subject.Count; i++)
+                    {
+                        @Model.Subject[i].InnerText<br />
+                    }
+                }
+                @if (Model.GeogName.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted mt-4">Places</h5>
+                    for (var i = 0; i < Model.GeogName.Count; i++)
+                    {
+                        @Model.GeogName[i].InnerText<br />
+                    }
+                }
+                @*@if (Model.Spatial.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted mt-4">Wikidata Locations</h5>
+                    for (var i = 0; i < Model.Spatial.Count; i++)
+                    {
+                        <a href="@Model.Spatial[i].Attributes["authfilenumber"].Value">@Model.Spatial[i].InnerText</a><br />
+                    }
+                }*@
+                @if (Model.UniformTitle.Count > 0)
+                {
+                    <h5 class="text-uppercase font-weight-bold text-muted mt-4">Titles</h5>
+                    for (var i = 0; i < Model.UniformTitle.Count; i++)
+                    {
+                        @Model.UniformTitle[i].InnerText<br />
+                    }
+                }
+            </div>
+            <hr />
+        }
+
+        @if (Model.ContainerList.Count > 0)
+        {
+            <span class="anchor" id="list"></span>
+            <div id="containerlist" class="mt-4">
+
+                <h5 class="text-uppercase font-weight-bold">Container list</h5>
+
+                @if (Model.EadId == "0741")
+                {
+                    <div><a href="0741e#list">Expand All</a> / <a href="0741#list" id="toggleAccordions-hide">Hide All</a></div>
+                }
+                else if (Model.EadId == "0268")
+                {
+                    <div><a href="0268e#list">Expand All</a> / <a href="0268#list" id="toggleAccordions-hide">Hide All</a></div>
+                }
+                else
+                {
+                    <div><a href="javascript:void(0)" id="toggleAccordions-show">Expand All</a> / <a href="javascript:void(0)" id="toggleAccordions-hide">Hide All</a></div>
+                }
+
+                @foreach (var c in Model.ContainerList)
+                {
+                    switch (c.Level)
+                    {
+                        case "series":
+                            if (Model.AsRepoId == AsRepoId.ManuscriptCollection)
+                            {
+                                @Html.Partial("_SeriesPartial", c)
+                            }
+                            else if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                            {
+                                @Html.Partial("_UaSeriesPartial", c)
+                            }
+                            else if (Model.AsRepoId == AsRepoId.LaupusHistoryCollections)
+                            {
+                                @Html.Partial("_UaSeriesPartial", c)
+                            }
+                            break;
+                        case "subseries":
+                            if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                            {
+                                @Html.Partial("_UaSubseriesPartial", c)
+                            }
+                            break;
+                        case "subgrp":
+                            if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                            {
+                                @Html.Partial("_UaSubgroupPartial", c)
+                            }
+                            break;
+                        case "file":
+                            if (Model.AsRepoId == AsRepoId.ManuscriptCollection)
+                            {
+                                @Html.Partial("_FilePartial", c)
+                            }
+                            else if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                            {
+                                @Html.Partial("_UaFilePartial", c)
+                            }
+                            else if (Model.AsRepoId == AsRepoId.LaupusHistoryCollections)
+                            {
+                                @Html.Partial("_UaFilePartial", c)
+                            }
+                            break;
+                        case "item":
+                            if (Model.AsRepoId == AsRepoId.ManuscriptCollection)
+                            {
+                                @Html.Partial("_ItemPartial", c)
+                            }
+                            else if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                            {
+                                @Html.Partial("_UaItemPartial", c)
+                            }
+                            break;
+                    }
+                }
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/mark")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".anchor").css({
+                "height": $(".sticky-top h2").height() + 47,
+                "margin-top": -($(".sticky-top h2").height() + 47)
+            });
+            $("#right-nav").mark("@Request.QueryString["q"]");
+        });
+
+        $(function () {
+            $('#toggleAccordions-show').on('click',
+                function (e) {
+                    $('#accordion .collapse').removeAttr("data-parent");
+                    $('#accordion .collapse').collapse('show');
+                });
+            $('#toggleAccordions-hide').on('click',
+                function (e) {
+                    $('#accordion .collapse').attr("data-parent", "#accordion");
+                    $('#accordion .collapse').collapse('hide');
+                });
+        });
+    </script>
+}

@@ -1,0 +1,64 @@
+﻿@model ead_frontend.Models.NotShelvedVm
+@{
+    ViewBag.Title = "Requests Not Shelved";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>Requests Not Shelved</h2>
+<hr />
+<div class="alert alert-info"><i class="fa fa-eye"></i> Viewing @ViewBag.Collection</div>
+@if (Model != null && Model.Requests.Count > 0)
+{
+    <table class="table table-striped table-small">
+        <thead>
+            <tr>
+                <th><i class="fa fa-sort"></i> @Html.ActionLink("EADID", "NotShelved", new { sortOrder = ViewBag.IdSortParm, repo = ViewBag.Collection })</th>
+                <th><i class="fa fa-sort"></i> @Html.ActionLink("Title", "NotShelved", new { sortOrder = ViewBag.TitleSortParm, repo = ViewBag.Collection })</th>
+                <th><i class="fa fa-sort"></i> @Html.ActionLink("Repository", "NotShelved", new { sortOrder = ViewBag.RepoSortParm, repo = ViewBag.Collection })</th>
+            </tr>
+        </thead>
+        @foreach (var request in Model.Requests)
+        {
+            var items = Model.Items.FindAll(x => x.request_id == request.id);
+            if (items.Any(x => x.location != "Not Used"))
+            {
+                <tr onclick="window.location.href = '@Url.Action("View", "Request", new {request.id})';" class="cursor-pointer">
+                    <td>@request.identifier</td>
+                    <td>
+                        @request.title
+                        @foreach (var item in items)
+                        {
+                            if (item.location != "Not Used")
+                            {
+                                <span class="d-block font-italic small text-secondary">Component @item.box - @item.location</span>
+                            }
+
+                        }
+                    </td>
+                    <td>@request.location</td>
+                </tr>
+            }
+        }
+    </table>
+}
+<hr />
+<h3>Refine</h3>
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <label for="collection">Choose Repository</label>
+        <select class="form-control col-md-6" id="CollectionList" name="CollectionList">
+            <option value="All Repositories">All Repositories</option>
+            <option value="Manuscript Collection">Manuscript Collection</option>
+            <option value="University Archives">University Archives</option>
+            <option value="Laupus History Collections">Laupus History Collections</option>
+            <option value="Country Doctor Museum">Country Doctor Museum</option>
+            <option value="Books">Books</option>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Update</button>
+    <input id="collHidden" type="hidden" value="@ViewBag.Collection" />
+
+
+}

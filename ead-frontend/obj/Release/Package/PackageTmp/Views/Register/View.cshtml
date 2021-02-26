@@ -1,0 +1,91 @@
+﻿@model ead_frontend.Models.Register
+@{
+    ViewBag.Title = "View Registrant";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>@Model.email</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success mt-2" role="alert">
+        @TempData["Message"]
+    </div>
+}
+
+<div class="card mt-3 mb-3">
+    <div class="card-body">
+        <dl class="row mb-0 small">
+            <dt class="col-md-3">@Html.LabelFor(model => model.first_name)</dt>
+            <dd class="col-md-9">@Model.first_name</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.last_name)</dt>
+            <dd class="col-md-9">@Model.last_name</dd>
+            <dt class="col-md-3">
+                @Html.LabelFor(model => model.email)
+                @if (User.Identity.Name.ToLower() == "reecem" || User.Identity.Name.ToLower() == "springk18")
+                {
+                    <a href="#" data-toggle="modal" data-target="#emailModal" class="pl-1"><i class="fa fa-edit"></i></a>
+                    <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            @using (Html.BeginForm("UpdateEmail", "Register"))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(model => model.id)
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="emailModalLabel">Update Email Address</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" value="Add" class="btn btn-primary"><i class="fa fa-plus"></i> Update</button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </dt>
+            <dd class="col-md-9">@Model.email</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.phone)</dt>
+            <dd class="col-md-9">@Model.phone</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.address)</dt>
+            <dd class="col-md-9">@Model.address</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.city_town)</dt>
+            <dd class="col-md-9">@Model.city_town</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.state_province)</dt>
+            <dd class="col-md-9">@Model.state_province</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.zip_code)</dt>
+            <dd class="col-md-9">@Model.zip_code</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.country)</dt>
+            <dd class="col-md-9">@Model.country</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.research_topics)</dt>
+            <dd class="col-md-9">@Model.research_topics</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.registered_on)</dt>
+            <dd class="col-md-9">@Model.registered_on</dd>
+        </dl>
+    </div>
+</div>
+@if (Request.QueryString["request_id"] != null)
+{
+    <a href="@Url.Action("View", "Request", new { id = Request.QueryString["request_id"]})" class="btn btn-danger"><i class="fa fa-arrow-left"></i> Back</a>
+}
+else
+{
+    <a href="@Url.Action("List")" class="btn btn-danger"><i class="fa fa-arrow-left"></i> Back</a>
+}
+@if (User.Identity.Name.ToLower() == "reecem" || User.Identity.Name.ToLower() == "springk18")
+{
+    <a href="@Url.Action("Delete", new { Model.id })" class="btn btn-outline-danger" onclick="return confirm('Are you sure you wish to delete this user?');">Delete User</a>
+    <small class="d-block font-italic text-secondary mt-1">Delete and email edit only available for users springk18 and reecem</small>
+}
+
+

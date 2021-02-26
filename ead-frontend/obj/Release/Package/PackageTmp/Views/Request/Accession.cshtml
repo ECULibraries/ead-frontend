@@ -1,0 +1,23 @@
+﻿@model List<ead_frontend.Models.AsAccession>
+@{
+    ViewBag.Title = "Accession";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>Unassigned UA Accessions</h2>
+<hr/>
+<p>Select one of the accessions below to create a Fetch request.</p>
+<table class="table table-striped">
+    <thead>
+    <tr><th>Identifier</th><th>Title</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var accession in Model)
+    {
+        <tr>
+            <td>@accession.identifier</td>
+            <td><a href="@Url.Action("Submit", "Request", new { title = @accession.title, identifier = @accession.identifier, location="accession"})">@accession.title</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

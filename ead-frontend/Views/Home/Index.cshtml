@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+    <div class="jumbotron">
+        <h1>ECU Libraries Collection Guides</h1>
+        <p class="lead">
+            The ECU Libraries archival collections contain the <a href="https://library.ecu.edu/specialcollections/manuscripts/">East Carolina Manuscript Collection</a>,
+            the <a href="https://hsl.ecu.edu/history-collections/">Laupus Library History Collections</a>, the <a href="https://www.countrydoctormuseum.org/">Country Doctor Museum</a>, and the
+            <a href="https://library.ecu.edu/specialcollections/archives/">University Archives</a>. These combined holdings include over 2,000 collections of
+            primary source material such as letters, diaries, photographs, oral histories, maps, and records that document the history of North Carolina,
+            rural health care, worldwide military events, student life, and official East Carolina University operations.
+        </p>
+
+        @using (Html.BeginForm("Route", "Search", FormMethod.Post))
+        {
+            <div class="d-none d-md-block d-lg-block">
+                <div class="input-group mb-3 pt-3">
+                    <input type="search" class="form-control" placeholder="Search Collection Guides" aria-label="Search Collection Guides" name="q" id="q" autofocus="autofocus">
+                    <div class="input-group-append">
+                        <select id="repo" name="repo" class="input-group-text bg-white small">
+                            <option selected="selected">All Repositories</option>
+                            <option>Country Doctor Museum</option>
+                            <option>Laupus Library</option>
+                            <option>Manuscript Collection</option>
+                            <option>University Archives Collection</option>
+                        </select>
+                    </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Search <span class="fa fa-search"></span></button>
+                    </div>
+                </div>
+            </div>
+        }
+        @using (Html.BeginForm("RouteMobile", "Search", FormMethod.Post))
+        {
+            <div class="d-md-none d-sm-block">
+                <input type="search" class="form-control mb-1" placeholder="Search Collection Guides" aria-label="Search Collection Guides" name="qm" id="qm" autofocus="autofocus">
+                <select id="repom" name="repom" class="input-group-text w-100 bg-white mb-1">
+                    <option selected="selected">All Repositories</option>
+                    <option>Country Doctor Museum</option>
+                    <option>Laupus Library</option>
+                    <option>Manuscript Collection</option>
+                    <option>University Archives Collection</option>
+                </select>
+                <button class="btn btn-primary w-100" type="submit">Search <span class="fa fa-search"></span></button>
+            </div>
+        }
+    </div>
+
+    <div class="card small">
+        <div class="card-header font-weight-bold">Requesting Material</div>
+        <div class="card-body">
+
+            <p class="card-text">Each collection guide contains a link to request materials that you wish to view in person. Each repository has its own location, hours, and policies for providing access to its collections. Please consult the repository with questions about using the materials. Collections are non-circulating and must be used in the repository’s reading room.</p>
+            <p class="card-text">Collections are made available for use in research, teaching, and private study, pursuant to U.S. Copyright law. The user assumes full responsibility for any use of the materials, including but not limited to taking precautions against infringement of copyright and respecting the publication rights of reproduced materials.</p>
+        </div>
+    </div>
+

@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewBag.Title = "RepoReport";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>Request Counts by Repository</h2>
+<hr />
+<div class="row text-center">
+    <div style="width:100%;height:100%">
+        <canvas id="myChart" style="padding: 0;margin: auto;display: block;"></canvas>
+    </div>
+</div>
+<button onclick="PrintImage()" class="btn btn-info mt-3">Print Chart</button>
+@section Scripts {
+    @Scripts.Render("~/bundles/chart")
+
+    <script type="text/javascript">
+        function PrintImage() {
+            var canvas = document.getElementById("myChart");
+            var win = window.open();
+            win.document.write("<br><img src='" + canvas.toDataURL() + "'/>");
+            win.print();
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetRepoChart", "Report")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (chData) {
+                var aData = chData;
+                var aLabels = aData[0];
+                var aDatasets1 = aData[1];
+                var dataT = {
+                    labels: aLabels,
+                    datasets: [{
+                        label: "Test Data",
+                        data: aDatasets1,
+                        fill: false,
+                        backgroundColor: ["rgba(255, 99, 132, 0.4)", "rgba(255, 205, 86, 0.4)", "rgba(54, 162, 235, 0.4)", "rgba(75, 192, 192, 0.4)"],
+                        borderColor: ["rgb(255, 99, 132)", "rgb(255, 205, 86)", "rgb(54, 162, 235)", "rgb(75, 192, 192)"],
+                        borderWidth: 1
+                    }]
+                };
+                var ctx = $("#myChart").get(0).getContext("2d");
+                var myNewChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: dataT,
+                    options: {
+                        responsive: true,
+                        title: { display: true, text: 'Request Counts by Repository' },
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                generateLabels: function(chart) {
+                                    var data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map(function(label, i) {
+                                            var meta = chart.getDatasetMeta(0);
+                                            var ds = data.datasets[0];
+                                            var arc = meta.data[i];
+                                            var custom = arc && arc.custom || {};
+                                            var getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
+                                            var arcOpts = chart.options.elements.arc;
+                                            var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                            var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                            var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+
+                                            // value of the current label
+                                            var value = chart.config.data.datasets[arc._datasetIndex].data[arc._index];
+
+                                            return {
+                                                text: label + " : " + value,
+                                                fillStyle: fill,
+                                                strokeStyle: stroke,
+                                                lineWidth: bw,
+                                                hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                                index: i
+                                            };
+                                        });
+                                    } else {
+                                        return [];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Repository'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Request Count'
+                                },
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

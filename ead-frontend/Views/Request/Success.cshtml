@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = "Success";
+}
+
+<h2>Request Submitted</h2>
+<hr />
+@if (ViewBag.Library == "joyner")
+{
+    <div class="alert alert-info">
+        <label class="font-weight-bold d-block">Joyner Library</label>
+        Your request for onsite use has been submitted. Please check your email for additional information.
+        If you have any questions, or if you didn’t receive an email, please contact us at <a href="mailto:specialcollections@ecu.edu">specialcollections@ecu.edu</a> or by calling (252) 328-6601.
+    </div>
+}
+else
+{
+<div class="alert alert-info">
+    <label class="font-weight-bold d-block">Laupus Library</label>
+    Your request for onsite use has been submitted. Please check your email for additional information.
+    If you have any questions, or if you didn’t receive an email, please contact us at <a href="mailto:hslhistmed@ecu.edu">hslhistmed@ecu.edu</a>, or by calling (252) 744-2219.
+</div>
+}
+

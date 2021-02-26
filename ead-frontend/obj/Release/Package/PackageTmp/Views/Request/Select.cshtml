@@ -1,0 +1,140 @@
+﻿@using ead_frontend.Models
+@model ead_frontend.Models.GuideModel
+
+@{
+    ViewBag.Title = "Select Material";
+}
+
+<h2>Select Material</h2>
+<p>
+    Use the checkboxes to select the material that you would like to use, then click the continue 
+    button at the bottom of the page. You may need to expand sections below to reveal boxes that 
+    can be selected. If there isn't a checkbox next to the item you want to view, you can click
+    continue at the bottom and a staff member will assist you when you arrive.
+</p>
+<hr />
+
+@if (Model.ContainerList.Count > 0)
+{
+    <div id="containerlist" class="mt-4">
+
+        <h5 class="text-uppercase font-weight-bold">Container list</h5>
+
+        @if (Model.EadId == "0741")
+        {
+            <div><a href="select?title=@Request.QueryString["title"]&identifier=@Request.QueryString["identifier"]e">Expand All</a> / <a href="select?title=@Request.QueryString["title"]&identifier=@Request.QueryString["identifier"].TrimEnd('e')" id="toggleAccordions-hide">Hide All</a></div>
+        }
+        else if (Model.EadId == "0268")
+        {
+            <div><a href="select?title=@Request.QueryString["title"]&identifier=@Request.QueryString["identifier"]e">Expand All</a> / <a href="select?title=@Request.QueryString["title"]&identifier=@Request.QueryString["identifier"].TrimEnd('e')" id="toggleAccordions-hide">Hide All</a></div>
+        }
+        else
+        {
+            <div><a href="javascript:void(0)" id="toggleAccordions-show">Expand All</a> / <a href="javascript:void(0)" id="toggleAccordions-hide">Hide All</a></div>
+        }
+
+        @foreach (var c in Model.ContainerList)
+        {
+            switch (c.Level)
+            {
+                case "series":
+                    if (Model.AsRepoId == AsRepoId.ManuscriptCollection)
+                    {
+                        @Html.Partial("~/Views/Guide/_SeriesPartial.cshtml", c)
+                    }
+                    else if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                    {
+                        @Html.Partial("~/Views/Guide/_UaSeriesPartial.cshtml", c)
+                    }
+                    else if (Model.AsRepoId == AsRepoId.LaupusHistoryCollections)
+                    {
+                        @Html.Partial("~/Views/Guide/_UaSeriesPartial.cshtml", c)
+                    }
+                    break;
+                case "subseries":
+                    if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                    {
+                        @Html.Partial("~/Views/Guide/_UaSubseriesPartial.cshtml", c)
+                    }
+                    break;
+                case "subgrp":
+                    if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                    {
+                        @Html.Partial("~/Views/Guide/_UaSubgroupPartial.cshtml", c)
+                    }
+                    break;
+                case "file":
+                    if (Model.AsRepoId == AsRepoId.ManuscriptCollection)
+                    {
+                        @Html.Partial("~/Views/Guide/_FilePartial.cshtml", c)
+                    }
+                    else if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                    {
+                        @Html.Partial("~/Views/Guide/_UaFilePartial.cshtml", c)
+                    }
+                    else if (Model.AsRepoId == AsRepoId.LaupusHistoryCollections)
+                    {
+                        @Html.Partial("~/Views/Guide/_UaFilePartial.cshtml", c)
+                    }
+                    break;
+                case "item":
+                    if (Model.AsRepoId == AsRepoId.ManuscriptCollection)
+                    {
+                        @Html.Partial("~/Views/Guide/_ItemPartial.cshtml", c)
+                    }
+                    else if (Model.AsRepoId == AsRepoId.UniversityArchives)
+                    {
+                        @Html.Partial("~/Views/Guide/_UaItemPartial.cshtml", c)
+                    }
+                    break;
+            }
+        }
+    </div>
+    
+    using (Html.BeginForm("Process", "Request"))
+    {
+        <ul id="selectList"></ul>
+        <div class="sticky-footer text-center">
+            <input id="continue-selected" type="submit" value="Continue" class="btn btn-primary" style="display: none"/>
+            <input id="continue-unselected" type="submit" value="Continue" class="btn btn-primary" onclick = "return confirm('Are you sure you wish to submit this request without selecting any items?');"/>
+            <a href="@Url.Action("Index", "Guide", new {eadid = Request.QueryString["identifier"]})" class="btn btn-danger">Cancel</a>
+            <input type="hidden" name="title" value="@Request.QueryString["title"]" />
+            <input type="hidden" name="identifier" value="@Request.QueryString["identifier"]" />
+        </div>
+    }
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('#toggleAccordions-show').on('click',
+                function (e) {
+                    $('#accordion .collapse').removeAttr("data-parent");
+                    $('#accordion .collapse').collapse('show');
+                });
+            $('#toggleAccordions-hide').on('click',
+                function (e) {
+                    $('#accordion .collapse').attr("data-parent", "#accordion");
+                    $('#accordion .collapse').collapse('hide');
+                });
+            $('.form-check-input').change(function () {
+                if (this.checked) {
+                    $('<input>').attr('type', 'hidden').val($(this).attr("id")).attr("name", $(this).attr("id")).appendTo('form');
+                    $('#continue-selected').show();
+                    $('#continue-unselected').hide();
+                } else {
+                    $('input[type="hidden"][value="' + $(this).attr("id") + '"]').remove();
+                    $('#continue-selected').hide();
+                    $('#continue-unselected').show();
+                    $('input[type="hidden"]').each(function(i, val) {
+                        if ($(this).val().indexOf('chk_') == 0) {
+                            $('#continue-selected').show();
+                            $('#continue-unselected').hide();
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+}

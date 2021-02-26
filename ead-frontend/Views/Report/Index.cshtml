@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Reporting";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>Reporting</h2>
+<hr/>
+<div class="d-block mb-2"><a href="@Url.Action("Status", "Report")"><i class="fa fa-pie-chart"></i> Requests by User Status</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("UseType", "Report")"><i class="fa fa-pie-chart"></i> Requests by Use Type</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("Year", "Report")"><i class="fa fa-line-chart"></i> Submitted/Completed Request Counts</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("ItemCounts", "Report")"><i class="fa fa-line-chart"></i> Submitted/Completed Item Counts</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("RepoReport", "Report")"><i class="fa fa-bar-chart"></i> Request Counts by Repository</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("ActiveLocations", "Report")"><i class="fa fa-bar-chart"></i> Active Item Location Counts</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("HowFound", "Report")"><i class="fa fa-bar-chart"></i> How Users Found Us</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("CollectionRequests", "Report")"><i class="fa fa-table"></i> Request Counts by Collection</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("NotShelved", "Report")"><i class="fa fa-table"></i> Requests Not Shelved</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("HighUse", "Report")"><i class="fa fa-table"></i> High Use Components</a></div>
+<div class="d-block mb-2"><a href="@Url.Action("Export", "Report")"><i class="fa fa-file-excel-o"></i> Export Request Data</a></div>

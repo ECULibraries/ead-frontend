@@ -1,0 +1,112 @@
+﻿@model ead_frontend.Models.Component
+
+@if (Model.Children.Count == 0 && Model.Daos.Count == 0)
+{
+    <div class="d-block p-3 border-bottom">
+        <small class="d-block text-muted">@Model.Container</small>
+        @Model.UnitTitleDate
+        @if (Model.ScopeNotes.Count > 0)
+        {
+            foreach (var p in Model.ScopeNotes)
+            {
+                <p class="mb-0 mt-1">@p</p>
+            }
+        }
+        @if (Model.AccessRestrict.Count > 0)
+        {
+            foreach (var p in Model.AccessRestrict)
+            {
+                <p class="mb-0 mt-1">@p</p>
+            }
+        }
+    </div>
+}
+else
+{
+    <div id="accordion">
+        <div class="card mb-1">
+            <div id="heading@(Model.UnitId)" class="card-header p-0">
+                <h5 class="mb-0">
+                    <a class="btn btn-link d-block w-100 text-left pl-3 pr-3 pt-2 pb-2 cursor-pointer gray collapsed" data-toggle="collapse" data-target="#collapse@(Model.UnitId.Replace(".", "-"))" aria-expanded="true" aria-controls="collapseOne">
+                        @{ var unitid = Model.UnitId.Split('.'); }
+                        @if (unitid.Length > 3)
+                        {
+                            <small class="d-block text-muted">Subseries @unitid[3].TrimStart('0')</small>
+                        }
+                        else if(unitid.Length > 2)
+                        {
+                            <small class="d-block text-muted">Subseries @unitid[2].TrimStart('0')</small>
+                        }
+                        else
+                        {
+                        <small class="d-block text-muted">Subseries @unitid[1].TrimStart('0')</small>
+                        }
+                        @if (Model.HasDigitizedContent)
+                        {
+                            <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                        } @Model.UnitTitleDate
+                        <span class="float-right plus-minus"></span>
+                    </a>
+                </h5>
+            </div>
+            <div id="collapse@(Model.UnitId.Replace(".", "-"))" class="collapse" aria-labelledby="heading@(Model.UnitId.Replace(".", "-"))">
+                <div class="card-body pt-2">
+                    @if (Model.ScopeNotes.Count > 0)
+                    {
+                        foreach (var p in Model.ScopeNotes)
+                        {
+                            <p class="mb-0 mt-1">@p</p>
+                        }
+                    }
+                    @if (Model.AccessRestrict.Count > 0)
+                    {
+                        foreach (var p in Model.AccessRestrict)
+                        {
+                            <p class="mb-0 mt-1">@p</p>
+                        }
+                    }
+                    @if (Model.Daos.Count == 1)
+                    {
+                        <a href="http://digital.lib.ecu.edu/@Model.Daos[0].objectID" target="_blank">@Model.UnitTitleDate</a>
+                    }
+                    else if (Model.Daos.Count > 1)
+                    {
+                        <ul>
+                            @foreach (var dao in Model.Daos)
+                            {
+                                <li><a href="http://digital.lib.ecu.edu/@dao.objectID" target="_blank">@dao.title</a></li>
+                            }
+                        </ul>
+                    }
+
+                    @if (Model.Children != null)
+                    {
+                        foreach (var c in Model.Children)
+                        {
+                            switch (c.Level)
+                            {
+                                case "subseries":
+                                    @Html.Partial("~/Views/Guide/_UaSubseriesPartial.cshtml", c)
+                                    break;
+                                case "file":
+                                    @Html.Partial("~/Views/Guide/_UaFilePartial.cshtml", c)
+                                    break;
+                                case "item":
+                                    @Html.Partial("~/Views/Guide/_UaItemPartial.cshtml", c)
+                                    break;
+                                case "otherlevel":
+                                    if (c.OtherLevel != null && c.OtherLevel.ToLower() == "sub-sub-series")
+                                    {
+                                        @Html.Partial("~/Views/Guide/_UaSubSubseriesPartial.cshtml", c)
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

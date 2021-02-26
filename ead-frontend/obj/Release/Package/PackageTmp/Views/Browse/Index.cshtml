@@ -1,0 +1,298 @@
+﻿@model ead_frontend.Models.BrowseModel
+@{
+    ViewBag.Title = "Browse";
+}
+
+<h2>Browse</h2>
+<hr />
+<div class="btn-group flex-wrap" role="group" aria-label="A-Z list">
+    <a href="@Url.Action("Index", "Browse")" class="btn btn-outline-primary border-0">All</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "0-9"})" class="btn btn-outline-primary border-0">0-9</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "A"})" class="btn btn-outline-primary border-0">A</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "B"})" class="btn btn-outline-primary border-0">B</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "C"})" class="btn btn-outline-primary border-0">C</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "D"})" class="btn btn-outline-primary border-0">D</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "E"})" class="btn btn-outline-primary border-0">E</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "F"})" class="btn btn-outline-primary border-0">F</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "G"})" class="btn btn-outline-primary border-0">G</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "H"})" class="btn btn-outline-primary border-0">H</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "I"})" class="btn btn-outline-primary border-0">I</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "J"})" class="btn btn-outline-primary border-0">J</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "K"})" class="btn btn-outline-primary border-0">K</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "L"})" class="btn btn-outline-primary border-0">L</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "M"})" class="btn btn-outline-primary border-0">M</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "N"})" class="btn btn-outline-primary border-0">N</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "O"})" class="btn btn-outline-primary border-0">O</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "P"})" class="btn btn-outline-primary border-0">P</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "Q"})" class="btn btn-outline-primary border-0">Q</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "R"})" class="btn btn-outline-primary border-0">R</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "S"})" class="btn btn-outline-primary border-0">S</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "T"})" class="btn btn-outline-primary border-0">T</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "U"})" class="btn btn-outline-primary border-0">U</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "V"})" class="btn btn-outline-primary border-0">V</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "W"})" class="btn btn-outline-primary border-0">W</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "X"})" class="btn btn-outline-primary border-0">X</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "Y"})" class="btn btn-outline-primary border-0">Y</a>
+    <a href="@Url.Action("Index", "Browse", new {letter = "Z"})" class="btn btn-outline-primary border-0">Z</a>
+</div>
+<hr />
+<input id="guide-list" placeholder="Start typing to filter this list..." class="form-control mb-4 col-md-6" autofocus="autofocus"/>
+<div class="small mb-3"><i class="fa fa-camera text-muted" aria-hidden="true" title="Collections with digitized content"></i> Collections with digitized content</div>
+<table class="table" id="guide-table">
+<thead>
+<tr>
+    <th></th>
+    <th><a href="@Url.Action("Index", "Browse")">Title</a></th>
+    <th><a href="@Url.Action("Index", "Browse", new { sortOrder = "repo" })">Repository</a></th>
+</tr>
+</thead>
+    @if (ViewBag.Letter == "0-9")
+    {
+        foreach (var result in Model.Results.Where(q => char.IsNumber(q.TitleSort[0])))
+        {
+            <tr>
+                <td>
+                    @if (result.DigitizedItems)
+                    {
+                        <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                    }
+                </td>
+                <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+                <td class="text-nowrap">
+                    @result.Repository
+                </td>
+            </tr>
+        }
+    }
+    else if (ViewBag.Letter != null)
+    {
+        foreach (var result in Model.Results.FindAll(x => x.TitleSort.StartsWith(ViewBag.Letter)))
+        {
+            <tr>
+                <td>
+                    @if (result.DigitizedItems)
+                    {
+                        <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                    }
+                </td>
+                <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+                <td class="text-nowrap">
+                    @result.Repository
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        foreach (var result in Model.Results)
+        {
+            <tr>
+                <td>
+                    @if (result.DigitizedItems)
+                    {
+                        <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                    }
+                </td>
+                <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+                <td class="text-nowrap">
+                    @result.Repository
+                </td>
+            </tr>
+        }
+    }
+    
+    @*@foreach (var result in Model.Results.FindAll(x => x.Repository == "Manuscript Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Church Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Miscellaneous Broadside Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Map Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Microfilm Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Miscellaneous Genealogy"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Miscellaneous Newspapers Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Miscellaneous Photographs Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Oral History Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Country Doctor Museum"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "Laupus Library"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }
+    @foreach (var result in Model.Results.FindAll(x => x.Repository == "University Archives Collection"))
+    {
+        <tr>
+            <td>
+                @if (result.DigitizedItems)
+                {
+                    <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                }
+            </td>
+            <td><a href="@Url.Action("Index", "Guide", new {eadid = result.EadId})">@result.TitleSort</a> <span>(#@result.EadId)</span></td>
+            <td>
+                @result.Repository
+            </td>
+        </tr>
+    }*@
+</table>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $("#guide-list").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#guide-table tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script> 
+}

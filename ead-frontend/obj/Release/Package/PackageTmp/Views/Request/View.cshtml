@@ -1,0 +1,447 @@
+﻿@model ead_frontend.Models.RequestViewVm
+@{
+    ViewBag.Title = "View Request";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>View Request #@Model.Request.id</h2>
+@if (Model.Request.completed_on == null)
+{
+    <a href="@Url.Action("Index", "Request")" class="btn btn-outline-danger"><i class="fa fa-arrow-left"></i> Back</a>
+}
+else
+{
+    <a href="@Url.Action("Reshelved", "Request")" class="btn btn-outline-danger"><i class="fa fa-arrow-left"></i> Back</a>
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success mt-2" role="alert">
+        @TempData["Message"]
+    </div>
+}
+
+<div class="card mt-3">
+    <div class="card-body">
+        <dl class="row mb-0 small">
+            @if (Model.Request.repo_id == 3 || Model.Request.repo_id == 4)
+            {
+                <dt class="col-md-3">@Html.LabelFor(model => model.Request.email)</dt>
+                <dd class="col-md-9"><span>@Model.Request.email</span></dd>
+            }
+            else if (Model.Request.register_id != null)
+            {
+                <dt class="col-md-3">@Html.LabelFor(model => model.Request.email)</dt>
+                <dd class="col-md-9"><a href="@Url.Action("View", "Register", new {id = Model.Request.register_id, request_id = Model.Request.id})">@Model.Request.email <i class="fa fa-star text-warning"></i></a></dd>
+            }
+            else
+            {
+                <dt class="col-md-3">
+                    @Html.LabelFor(model => model.Request.email)
+                    <a href="#" data-toggle="modal" data-target="#emailModal" class="pl-1"><i class="fa fa-edit"></i></a>
+                    <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            @using (Html.BeginForm("UpdateEmail", "Request"))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(x => x.Request.id)
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="emailModalLabel">Update Email Address</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            @Html.EditorFor(model => model.Request.email, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Request.email, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" value="Add" class="btn btn-primary"><i class="fa fa-plus"></i> Update</button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </dt>
+                <dd class="col-md-9"><span>@Model.Request.email <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true" title="User not registered"></i></span></dd>
+            }
+            <dt class="col-md-3">Name</dt>
+            <dd class="col-md-9">@Model.Request.first_name @Model.Request.last_name</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.Request.phone)</dt>
+            <dd class="col-md-9">@Model.Request.phone</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.Request.status_id)</dt>
+            <dd class="col-md-9">@Model.StatusList.Find(x => x.id == Model.Request.status_id).status</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.Request.use_id)</dt>
+            <dd class="col-md-9">@Model.UseList.Find(x => x.id == Model.Request.use_id).value</dd>
+            <dt class="col-md-3">@Html.LabelFor(model => model.Request.title)</dt>
+            <dd class="col-md-9">@Model.Request.title</dd>
+            @if (Model.Request.repo_id == 5)
+            {
+                <dt class="col-md-3">@Html.LabelFor(model => model.Request.identifier)</dt>
+                <dd class="col-md-9">@Model.Request.identifier</dd>
+                <dt class="col-md-3">Notes</dt>
+                <dd class="col-md-9">@Model.Request.folder_item&nbsp;</dd>
+            }
+            else
+            {
+                <dt class="col-md-3">@Html.LabelFor(model => model.Request.identifier)</dt>
+                <dd class="col-md-9"><a href="@Url.Action("Index", "Guide", new { eadid = Model.Request.identifier})" target="_blank">@Model.Request.identifier <i class="fa fa-external-link"></i></a></dd>
+                <dt class="col-md-3">@Html.LabelFor(model => model.Request.folder_item)</dt>
+                <dd class="col-md-9">@Model.Request.folder_item</dd>
+            }
+
+            <dt class="col-md-3">@Html.LabelFor(model => model.Request.submitted_on)</dt>
+            <dd class="col-md-9">@Model.Request.submitted_on</dd>
+            <dt class="col-md-3">
+                @Html.LabelFor(model => model.Request.visit_date)
+                @if (Model.Request.completed_on == null)
+                {
+                    <a href="#" data-toggle="modal" data-target="#visitModal" class="pl-1"><i class="fa fa-edit"></i></a>
+                    <div class="modal fade" id="visitModal" tabindex="-1" role="dialog" aria-labelledby="visitModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            @using (Html.BeginForm("UpdateVisitDate", "Request"))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(x => x.Request.id)
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="visitModalLabel">Update Date of Visit</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                                                @Html.EditorFor(model => model.Request.visit_date, new { htmlAttributes = new { @class = "form-control datetimepicker-input", data_target = "#datetimepicker1" } })
+                                                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" value="Add" class="btn btn-primary"><i class="fa fa-plus"></i> Update</button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </dt>
+            <dd class="col-md-9">
+                @if (Model.Request.visit_date != null)
+                {
+                    <span>@Model.Request.visit_date.Value.ToShortDateString()</span>
+                }
+            </dd>
+
+        </dl>
+    </div>
+</div>
+@if (Model.Request.completed_on == null)
+{
+    <a href="#" data-toggle="modal" data-target="#boxModal" class="badge badge-pill badge-primary mt-0 mb-4"><i class="fa fa-plus"></i> Add Component</a>
+    <div class="modal fade" id="boxModal" tabindex="-1" role="dialog" aria-labelledby="boxModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            @using (Html.BeginForm("AddBox", "Request"))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("rid", Model.Request.id)
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="boxModalLabel">Add additional components</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="small">* Separate multiple components with a comma</label>
+                            <div>
+                                <input class="form-control" name="boxes" id="boxes" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" value="Add" class="btn btn-primary"><i class="fa fa-plus"></i> Add</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <a href="@Url.Action("Reopen", new { id = Model.Request.id })" class="badge badge-pill badge-warning mt-0"><i class="fa fa-arrow-circle-o-left"></i> Re-open Request</a>
+}
+@if (Model.InactiveItems.Any())
+{
+    using (Html.BeginForm("SaveInactive", "Request"))
+    {
+        @Html.HiddenFor(m => Model.Request.id)
+        <h4>Inactive Components</h4>
+        <table class="table table-striped small">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="ckbInactive" /></th>
+                    <th>#</th>
+                    <th>Selected CUIDs</th>
+                    <th>Shelf Location</th>
+                </tr>
+            </thead>
+            @for (var i = 0; i < Model.InactiveItems.Count; i++)
+            {
+                <tr>
+                    @Html.HiddenFor(m => m.InactiveItems[i].id)
+                    <td>@Html.CheckBoxFor(m => m.InactiveItems[i].selected, new { @class = "inactive_checks" })</td>
+                    <td>@Model.InactiveItems[i].box</td>
+                    <td>@Model.InactiveItems[i].cuids</td>
+                    <td>@Model.InactiveItems[i].location_code</td>
+                </tr>
+            }
+        </table>
+        <div class="form-group">
+            <i class="fa fa-map-marker"></i> <label>Use Location</label>
+            <div>
+                @Html.DropDownListFor(model => model.SelectedPreUseLocationId, Model.PreUseLocations, "-- Set Use Location --", new { @class = "form-control col-md-6" })
+                @Html.ValidationMessageFor(model => model.SelectedPreUseLocationId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Optional Note</label>
+            @Html.EditorFor(model => model.PreUseLocationNote, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.PreUseLocationNote, "", new { @class = "text-danger" })
+        </div>
+        <button type="submit" value="Save" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save</button>
+    }
+}
+
+@if (Model.ActiveItems.Any())
+{
+    <hr />
+    if (Model.Request.completed_on == null)
+    {
+        using (Html.BeginForm("SaveActive", "Request"))
+        {
+            @Html.HiddenFor(m => Model.Request.id)
+            <h4>Active Components</h4>
+            <table class="table table-striped small">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="ckbActive" /></th>
+                        <th>#</th>
+                        <th>Current Location</th>
+                        <th>Call Slip</th>
+                        <th>History</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                @for (var i = 0; i < Model.ActiveItems.Count; i++)
+                {
+                    <tr>
+                        @Html.HiddenFor(m => m.ActiveItems[i].id)
+                        <td>@Html.CheckBoxFor(m => m.ActiveItems[i].selected, new { @class = "active_checks" })</td>
+                        <td>@Model.ActiveItems[i].box</td>
+                        <td>
+                            @if (Model.ActiveItems[i].location_id == 103)
+                            {
+                                <span>Reshelved</span>
+                            }
+                            else
+                            {
+                                <span>@Model.InUseLocations.First(x => x.Value == Model.ActiveItems[i].location_id.ToString()).Text</span>
+                            }
+                        </td>
+                        <td><a href="@Url.Action("Print", new {rid = Model.Request.id, itemIds = Model.ActiveItems[i].id.ToString()})"><i class="fa fa-eye"></i> View Call Slip</a></td>
+                        <td><a href="#" data-toggle="modal" data-target="#item_@Model.ActiveItems[i].id"><i class="fa fa-calendar"></i> View History</a></td>
+                        <td>
+                            @if (Model.ActiveItems[i].location_id == 102)
+                            {
+                                <a href="#" data-toggle="modal" data-target="#reshelve_@Model.ActiveItems[i].id" class="text-success"><i class="fa fa-bookmark-o"></i> Reshelve</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+            <div class="form-group">
+                <i class="fa fa-map-marker"></i> <label>Use Location</label>
+                <div>
+                    @Html.DropDownListFor(model => model.SelectedInUseLocationId, Model.InUseLocations, "-- Set Use Location --", new { @class = "form-control col-md-6" })
+                    @Html.ValidationMessageFor(model => model.SelectedInUseLocationId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Optional Note</label>
+                @Html.EditorFor(model => model.InUseLocationNote, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InUseLocationNote, "", new { @class = "text-danger" })
+            </div>
+            <button type="submit" value="Save" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Save</button>
+        }
+    }
+    else
+    {
+        <h4>Re-Activate Components</h4>
+        <table class="table table-striped small">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Selected CUIDs</th>
+                    <th>History</th>
+                </tr>
+            </thead>
+            @for (var i = 0; i < Model.ActiveItems.Count; i++)
+            {
+                <tr>
+                    <td>@Model.ActiveItems[i].box</td>
+                    <td>@Model.ActiveItems[i].cuids</td>
+                    <td><a href="#" data-toggle="modal" data-target="#item_@Model.ActiveItems[i].id"><i class="fa fa-calendar"></i> View History</a></td>
+                </tr>
+            }
+        </table>
+    }
+
+    foreach (var item in Model.ActiveItems)
+    {
+        <div class="modal fade" id="item_@item.id" tabindex="-1" role="dialog" aria-labelledby="item_@item.id" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-calendar"></i> #@item.box History</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var evt in Model.Events.Where(x => x.item_id == item.id))
+                            {
+                                if (evt.location_id == 103)
+                                {
+                                    <li class="list-group-item">Reshelved - @evt.date_time.ToShortDateString() @evt.date_time.ToShortTimeString() <span class="text-secondary">(@evt.pirate_id)</span></li>
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">
+                                        @Model.InUseLocations.FirstOrDefault(x => x.Value == evt.location_id.ToString()).Text - @evt.date_time.ToShortDateString() @evt.date_time.ToShortTimeString() <span class="text-secondary">(@evt.pirate_id)</span>
+                                        @if (evt.note != null)
+                                        {
+                                            <div class="font-italic text-secondary">- @evt.note</div>
+                                        }
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        if (item.location_id == 102)
+        {
+            using (Html.BeginForm("Complete", "Request"))
+            {
+                <div class="modal fade" id="reshelve_@item.id" tabindex="-1" role="dialog" aria-labelledby="reshelve_@item.id" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-calendar"></i> Reshelve</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="request_id" value="@Model.Request.id" />
+                                <input type="hidden" name="item_id" value="@item.id" />
+                                <input type="hidden" name="item_code" value="@item.reshelve_code" />
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Box @item.box</span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Enter Reshelve Code" name="user_code" id="user_code" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" value="Reshelve" class="btn btn-success" />
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+}
+
+@if (Model.Request.completed_on == null && Model.SimilarRequests != null && Model.SimilarRequests.Count > 0 && Model.Request.completed_on == null)
+{
+    <hr />
+    <h3>Related Active Requests</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Collection/Book Title</th>
+            </tr>
+        </thead>
+        @foreach (var req in Model.SimilarRequests)
+        {
+            <tr onclick="window.location.href = '@Url.Action("View", "Request", new {req.id})';" class="cursor-pointer">
+                <td>@req.email</td>
+                <td>@req.title</td>
+            </tr>
+        }
+    </table>
+}
+
+@if (User.Identity.Name.ToLower() == "reecem" || User.Identity.Name.ToLower() == "springk18")
+{
+    <hr />
+    <a href="@Url.Action("Delete", new { Model.Request.id })" class="btn btn-outline-danger" onclick="return confirm('Are you sure you wish to delete this request and all associated events and items?');">Delete Request</a>
+    <small class="d-block font-italic text-secondary mt-1">Delete only available for users springk18 and reecem</small>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/datetimepicker")
+    @Styles.Render("~/Content/datetimepicker")
+    <script type="text/javascript">
+        
+        $(document).ready(function () {
+            $('#datetimepicker1').datetimepicker({
+                format: 'dddd, MMMM D, YYYY',
+                minDate: moment(new Date()),
+                date: moment('@Model.Request.visit_date'),
+                allowInputToggle: true
+            });
+
+            $("#ckbInactive").click(function () {
+                $(".inactive_checks").prop('checked', $(this).prop('checked'));
+            });
+            $(".inactive_checks").change(function () {
+                if (!$(this).prop("checked")) {
+                    $("#ckbCheckAll").prop("checked", false);
+                }
+            });
+            $("#ckbActive").click(function () {
+                $(".active_checks").prop('checked', $(this).prop('checked'));
+            });
+
+            $(".active_checks").change(function () {
+                if (!$(this).prop("checked")) {
+                    $("#ckbCheckAll").prop("checked", false);
+                }
+            });
+
+            
+        });
+    </script>
+}

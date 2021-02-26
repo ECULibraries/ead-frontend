@@ -1,0 +1,22 @@
+﻿@model ead_frontend.Models.Component
+    
+<div class="d-block p-3 border-bottom">
+    <small class="d-block text-muted">@Model.Container</small>
+    @if (Model.Daos.Count == 1)
+    {
+        <a href="http://digital.lib.ecu.edu/@Model.Daos[0].objectID" target="_blank">@Model.UnitTitleDate</a>
+    }
+    else if (Model.Daos.Count > 1) // occurs with duplicate items 
+    {
+        <ul>
+            @foreach (var dao in Model.Daos)
+            {
+                <li><a href="http://digital.lib.ecu.edu/@dao.objectID" target="_blank">@dao.title</a></li>
+            }
+        </ul>
+    }
+    else
+    {
+        @Model.UnitTitleDate
+    }
+</div>

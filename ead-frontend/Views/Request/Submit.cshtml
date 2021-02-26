@@ -1,0 +1,175 @@
+﻿@using System.Security.Claims
+@model ead_frontend.Models.RequestIndexVm
+@{
+    ViewBag.Title = "Index";
+
+    var identity = (ClaimsIdentity)User.Identity;
+    var apps = identity.Claims.Where(x => x.Type == "Apps").Select(y => y.Value).FirstOrDefault();
+    var isRequestAdmin = apps != null && apps.Contains("[742]");
+}
+
+<h2>Request for Onsite Use</h2>
+<hr />
+@if (Model.Request.identifier.StartsWith("LL") || Model.Request.identifier.StartsWith("CD"))
+{
+    <div class="alert alert-danger">
+        This page is <b>only for requesting materials that you wish to view in person in the Reading Room at Laupus Health Sciences Library</b>.
+        It does not permit you to view the materials online or to request their photoduplication. If you would like to request materials for
+        photoduplication, please email Laupus Library History Collections at <a href="mailto:HSLHISTMED@ecu.edu">HSLHISTMED@ecu.edu</a>.
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        This page is <b>only for requesting materials that you wish to view in person in the Reading Room at Joyner Library</b>. 
+        It does not permit you to view the materials online or to request their photoduplication. If you would like
+        to request materials for photoduplication, please visit our <a href="https://library.ecu.edu/specialcollections/use-guidelines/">Copying and Permissions</a> page.
+    </div>
+}
+
+<div class="alert alert-light">
+    <b>Sensitive Materials Statement</b><br />
+    Manuscript collections and archival records may contain materials with sensitive
+    or confidential information that is protected under federal or state right to
+    privacy laws and regulations, the North Carolina Public Records Act (N.C.G.S.
+    § 132 1 et seq.), and Article 7 of the North Carolina State Personnel Act
+    (Privacy of State Employee Personnel Records, N.C.G.S. § 126-22 et seq.).
+    Researchers are advised that the disclosure of certain information pertaining to
+    identifiable living individuals represented in this collection, without the
+    consent of those individuals, may have legal ramifications (e.g., a cause of
+    action under common law for invasion of privacy may arise if facts concerning an
+    individual's private life are published that would be deemed highly offensive to
+    a reasonable person) for which East Carolina University assumes no responsibility.
+</div>
+<span class="text-danger">*</span> required fields
+<hr />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Request.email) <span class="text-danger">*</span>
+        @Html.EditorFor(model => model.Request.email, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+        @Html.ValidationMessageFor(model => model.Request.email, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Request.first_name) <span class="text-danger">*</span>
+        @Html.EditorFor(model => model.Request.first_name, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+        @Html.ValidationMessageFor(model => model.Request.first_name, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Request.last_name) <span class="text-danger">*</span>
+        @Html.EditorFor(model => model.Request.last_name, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+        @Html.ValidationMessageFor(model => model.Request.last_name, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Request.status_id)  <span class="text-danger">*</span>
+        <div>
+            @Html.DropDownListFor(model => model.Request.status_id, Model.StatusList, "-- Select Your Status --", new { @class = "form-control col-md-4" })
+            @Html.ValidationMessageFor(model => model.Request.status_id, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    if (isRequestAdmin)
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Request.use_id)  <span class="text-danger">*</span>
+            <div>
+                @Html.DropDownListFor(model => model.Request.use_id, Model.UseList, "-- Select Type of Use --", new { @class = "form-control col-md-4" })
+                @Html.ValidationMessageFor(model => model.Request.use_id, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Request.visit_date)
+            <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                @Html.EditorFor(model => model.Request.visit_date, new { htmlAttributes = new { @class = "form-control datetimepicker-input col-md-4", data_target = "#datetimepicker1" } })
+                <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(model => model.Request.visit_date, "", new { @class = "text-danger" })
+        </div>
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Request.phone)
+        <div>
+            @Html.EditorFor(model => model.Request.phone, new { htmlAttributes = new { @class = "form-control col-md-4" } })
+        </div>
+    </div>
+    if (Request["location"] == null)
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Request.title) <span class="text-danger">*</span>
+            @Html.EditorFor(model => model.Request.title, new { htmlAttributes = new { @class = "form-control col-md-12", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.Request.title, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Request.identifier) <span class="text-danger">*</span>
+            @Html.EditorFor(model => model.Request.identifier, new { htmlAttributes = new { @class = "form-control col-md-4", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.Request.identifier, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Selected Boxes</label>
+            <input type="text" class="form-control col-md-4" readonly="readonly" value="@ViewBag.Boxes" />
+        </div>
+        @Html.HiddenFor(model => model.Request.component_ids)
+        <div class="form-group">
+            @Html.LabelFor(model => model.Request.folder_item)
+            @Html.EditorFor(model => model.Request.folder_item, new { htmlAttributes = new { @class = "form-control col-md-12" } })
+            @Html.ValidationMessageFor(model => model.Request.folder_item, "", new { @class = "text-danger" })
+        </div>
+    }
+    else
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Request.title) <span class="text-danger">*</span>
+            @Html.EditorFor(model => model.Request.title, new { htmlAttributes = new { @class = "form-control col-md-12", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.Request.title, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Request.identifier) <span class="text-danger">*</span>
+            @Html.EditorFor(model => model.Request.identifier, new { htmlAttributes = new { @class = "form-control col-md-4", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.Request.identifier, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            @Html.EditorFor(model => model.Request.folder_item, new { htmlAttributes = new { @class = "form-control col-md-12" } })
+            @Html.ValidationMessageFor(model => model.Request.folder_item, "", new { @class = "text-danger" })
+        </div>
+    }
+
+    <div class="text-center">
+        <input name="action" type="submit" class="btn btn-primary" value="Submit Request" />
+        @if (Request.QueryString["location"] == null)
+        {
+            <a href="@Url.Action("Index", "Guide", new {eadid = Request.QueryString["identifier"]})" class="btn btn-danger">Cancel</a>
+        }
+        else
+        {
+            <a href="http://digital.lib.ecu.edu/special/ead" class="btn btn-danger">Cancel</a>
+        }
+    </div>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/datetimepicker")
+    @Styles.Render("~/Content/datetimepicker")
+
+
+    <script type="text/javascript">
+        var baseURL = '@Url.Content("~/")';
+        $(function() {
+            $('#datetimepicker1').datetimepicker({
+                format: 'dddd, MMMM D, YYYY',
+                minDate: moment(new Date()),
+                allowInputToggle: true
+            });
+        });
+    </script>
+
+}

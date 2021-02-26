@@ -1,0 +1,97 @@
+﻿@using X.PagedList.Mvc;
+@using X.PagedList.Mvc.Bootstrap4
+
+@model X.PagedList.StaticPagedList<ead_frontend.Models.CollectionRequest>
+@{
+    ViewBag.Title = "Active Requests";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>Request Counts by Collection</h2>
+<hr/>
+<div class="alert alert-info"><i class="fa fa-eye"></i> Viewing @ViewBag.Collection @if (ViewBag.Start != null)
+                                                                                    {<span>@ViewBag.Start - @ViewBag.End</span>} </div>
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table table-striped table-small">
+        <thead>
+            <tr>
+                <th><i class="fa fa-sort"></i> @Html.ActionLink("EADID", "CollectionRequests", new { sortOrder = ViewBag.IdSortParm, repo = ViewBag.Collection, start = ViewBag.Start, end = ViewBag.End })</th>
+                <th><i class="fa fa-sort"></i> @Html.ActionLink("Title", "CollectionRequests", new { sortOrder = ViewBag.TitleSortParm, repo = ViewBag.Collection, start = ViewBag.Start, end = ViewBag.End })</th>
+                <th><i class="fa fa-sort"></i> @Html.ActionLink("Request Count", "CollectionRequests", new { sortOrder = ViewBag.CountSortParm, repo = ViewBag.Collection, start = ViewBag.Start, end = ViewBag.End })</th>
+            </tr>
+        </thead>
+        @foreach (var collection in Model)
+        {
+            <tr>
+                <td>@collection.identifier</td>
+                <td>@collection.title</td>
+                <td>@(collection.count + (collection.reopened ?? 0))</td>
+            </tr>
+        }
+
+    </table>
+    <div class="container">
+        <div class="row justify-content-md-center">
+            @Html.PagedListPager(Model, page => Url.Action("CollectionRequests", new { sortOrder = ViewBag.CurrentSort, page, repo = ViewBag.Collection, start = ViewBag.Start, end = ViewBag.End }), Bootstrap4PagedListRenderOptions.ClassicPlusFirstAndLast)
+        </div>
+    </div>
+}
+<hr />
+<h3>Refine</h3>
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <label for="collection">Choose Repository</label>
+        <select class="form-control col-md-6" id="CollectionList" name="CollectionList">
+            <option value="All Repositories">All Repositories</option>
+            <option value="Manuscript Collection">Manuscript Collection</option>
+            <option value="University Archives">University Archives</option>
+            <option value="Laupus History Collections">Laupus History Collections</option>
+            <option value="Country Doctor Museum">Country Doctor Museum</option>
+            <option value="Books">Books</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Start Date</label>
+        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+            <input id="start" name="start" type="text" class="form-control datetimepicker-input col-md-4" data-target="#datetimepicker1" />
+            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>End Date</label>
+        <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+            <input id="end" name="end" type="text" class="form-control datetimepicker-input col-md-4" data-target="#datetimepicker2" />
+            <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <input id="collHidden" type="hidden" value="@ViewBag.Collection" />
+    <input id="startHidden" type="hidden" value="@ViewBag.Start" />
+    <input id="endHidden" type="hidden" value="@ViewBag.End" />
+
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/datetimepicker")
+    @Styles.Render("~/Content/datetimepicker")
+    @Styles.Render("~/Content/fontawesome")
+
+    <script type="text/javascript">
+        //var baseURL = '@Url.Content("~/")';
+        $(function() {
+            $('#datetimepicker1').datetimepicker({
+                format: 'MMMM D, YYYY',
+                allowInputToggle: true
+            });
+            $('#datetimepicker2').datetimepicker({
+                format: 'MMMM D, YYYY',
+                allowInputToggle: true
+            });
+        });
+    </script>
+}

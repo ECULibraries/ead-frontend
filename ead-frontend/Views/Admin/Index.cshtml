@@ -1,0 +1,96 @@
+﻿@model ead_frontend.Models.AdminModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Publish Guides</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-warning" role="alert">
+        @Html.Raw(@TempData["Message"])
+    </div>
+}
+
+@if (Model.Files?.Length > 0)
+{
+    <table class="table mt-4">
+        @foreach (var file in Model.Files)
+        {
+            {
+                var split = file.Replace(@"\Uploads\", "^").Split('^');
+                <tr>
+                    <td>@split[1]</td>
+                    @*<td><a href="@Url.Action("Index", "Guide", new {eadid = split[1].Replace(".xml", "")})"><i class="fa fa-eye" aria-hidden="true"></i> View @split[1].Split('_')[0]</a></td>*@
+                    <td><a href="@Url.Action("Preview", "Admin", new {file = split[1].Replace(".xml", "")})"><i class="fa fa-file-image-o" aria-hidden="true"></i> Preview @split[1].Split('_')[0]</a></td>
+                    <td><a href="@Url.Action("Upload", "Admin", new {file = split[1]})"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Publish @split[1].Split('_')[0]</a></td>
+                    <td><a href="@Url.Action("Delete", "Admin", new {file = split[1]})"><i class="fa fa-times" aria-hidden="true"></i> Delete</a></td>
+                </tr>
+            }
+        }
+    </table>
+}
+
+<hr />
+@using (Html.BeginForm("FileUpload", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="form-group">
+        <label class="control-label">Upload ArchivesSpace XML</label>
+
+        <div class="input-group">
+            <label class="input-group-prepend">
+                <span class="btn btn-warning btn-lg">
+                    Browse <input type="file" name="files" value="" multiple="multiple" style="display: none;" />
+                </span>
+            </label>
+            <input class="form-control col-md-4" type="text" readonly="readonly">
+            <label class="input-group-append">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </label>
+        </div>
+    </div>
+}
+<hr />
+@using (Html.BeginForm("Unindex", "Admin"))
+{
+    <div class="input-group mb-3">
+        <input type="text" class="form-control col-md-4" placeholder="EAD ID" aria-label="EAD ID" aria-describedby="basic-addon2" name="eadid">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Unindex</button>
+        </div>
+    </div>
+}
+<hr />
+<a href="@Url.Action("Index", "Request")" class="d-block small"><i class="fa fa-external-link"></i> Fetch</a>
+<a href="@Url.Action("Index", "Register")" class="d-block small"><i class="fa fa-external-link"></i> Research Room Registration Form</a>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(document).on('change', ':file', function () {
+                var input = $(this),
+                    numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                input.trigger('fileselect', [numFiles, label]);
+            });
+
+            $(':file').on('fileselect', function (event, numFiles, label) {
+                var input = $(this).parents('.input-group').find(':text'),
+                    log = numFiles > 1 ? numFiles + ' files selected' : label;
+                if (input.length) {
+                    input.val(log);
+                } else {
+                    if (log) alert(log);
+                }
+            });
+
+            $('.filefield').on('click', function (event, numFiles, label) {
+                var fileinput = $(this).parents('.input-group').find(':file')
+                if (fileinput != null) { fileinput.focus().trigger('click'); }
+            });
+
+        });
+
+    </script>
+}

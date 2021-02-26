@@ -1,0 +1,132 @@
+﻿@using Microsoft.Ajax.Utilities
+@model ead_frontend.Models.RequestPrintVm
+@{
+    ViewBag.Title = "Call Slip";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<a href="@Url.Action("View", "Request", new { Model.Request.id })" class="btn btn-outline-danger print-back mb-4"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</a> 
+<a href="#" class="btn btn-outline-primary mb-4 print-back" onclick="window.print();return false;">
+    <i class="fa fa-print" aria-hidden="true"></i> Print
+</a>
+
+@if (Model.Request.identifier.Contains("("))
+{
+    <div class="row call-slip">
+        <div class="col-md-6">
+            <h2>Call Slip</h2>
+            <hr />
+            <div class="card-body">
+                <b class="d-block mb-2">Fetch Request #@Model.Request.id</b>
+                <b>Name</b>
+                <p>@Model.Request.first_name @Model.Request.last_name</p>
+                <b>Collection/Book Title</b>
+                <p>@Model.Request.title</p>
+                <b>Identifier</b>
+                <p>@Model.Request.identifier</p>
+                <b>Additional Notes</b>
+                <p>@Model.Request.folder_item</p>
+                <b class="code">Reshelve Code</b>
+                <p class="code">@Model.Items[0].reshelve_code</p>
+                <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Hold for Patron</b>
+                <p style="margin-left: 27px">Today's date ___________________________</p>
+                <p style="margin-left: 27px">Date of return _________________________</p>
+                <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Reshelve</b>
+                <p style="margin-left: 27px">Today's date ___________________________</p>
+                <p style="margin-left: 27px">Staff initials ____________________________</p>
+            </div>
+        </div>
+    </div>
+    <div class="row call-slip">
+        <div class="col-md-6">
+            <h2>Call Slip</h2>
+            <hr />
+            <div class="card-body">
+                <b class="d-block mb-2">Fetch Request #@Model.Request.id</b>
+                <b>Name</b>
+                <p>@Model.Request.first_name @Model.Request.last_name</p>
+                <b>Collection/Book Title</b>
+                <p>@Model.Request.title</p>
+                <b>Identifier</b>
+                <p>@Model.Request.identifier</p>
+                <b>Additional Notes</b>
+                <p>@Model.Request.folder_item</p>
+                <b class="code">Reshelve Code</b>
+                <p class="code">@Model.Items[0].reshelve_code</p>
+                <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Hold for Patron</b>
+                <p style="margin-left: 27px">Today's date ___________________________</p>
+                <p style="margin-left: 27px">Date of return _________________________</p>
+                <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Reshelve</b>
+                <p style="margin-left: 27px">Today's date ___________________________</p>
+                <p style="margin-left: 27px">Staff initials ____________________________</p>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    foreach (var item in Model.Items.DistinctBy(x => x.box))
+    {
+        <div class="row call-slip">
+            <div class="col-md-6">
+                <h2>Call Slip</h2>
+                <hr />
+                <div class="card-body">
+                    <b class="d-block mb-2">Fetch Request #@Model.Request.id</b>
+                    <b>Name</b>
+                    <p>@Model.Request.first_name @Model.Request.last_name</p>
+                    <b>Collection/Book Title</b>
+                    <p>@Model.Request.title</p>
+                    <b>Identifier</b>
+                    <p>@Model.Request.identifier</p>
+                    <b>Box</b>
+                    <p>@item.box</p>
+                    <b>Additional Notes</b>
+                    <p>@Model.Request.folder_item</p>
+                    <b>Location Code</b>
+                    <p>@item.location_code</p>
+                    <b class="code">Reshelve Code</b>
+                    <p class="code">@item.reshelve_code</p>
+                    <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Hold for Patron</b>
+                    <p style="margin-left: 27px">Today's date ___________________________</p>
+                    <p style="margin-left: 27px">Date of return _________________________</p>
+                    <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Reshelve</b>
+                    <p style="margin-left: 27px">Today's date ___________________________</p>
+                    <p style="margin-left: 27px">Staff initials ____________________________</p>
+                </div>
+            </div>
+        </div>
+        <div class="row call-slip">
+            <div class="col-md-6">
+                <h2>Call Slip</h2>
+                <hr />
+                <div class="card-body">
+                    <b class="d-block mb-2">Fetch Request #@Model.Request.id</b>
+                    <b>Name</b>
+                    <p>@Model.Request.first_name @Model.Request.last_name</p>
+                    <b>Collection/Book Title</b>
+                    <p>@Model.Request.title</p>
+                    <b>Identifier</b>
+                    <p>@Model.Request.identifier</p>
+                    <b>Box</b>
+                    <p>@item.box</p>
+                    <b>Additional Notes</b>
+                    <p>@Model.Request.folder_item</p>
+                    <b>Location Code</b>
+                    <p>@item.location_code</p>
+                    <b class="code">Reshelve Code</b>
+                    <p class="code">@item.reshelve_code</p>
+                    <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Hold for Patron</b>
+                    <p style="margin-left: 27px">Today's date ___________________________</p>
+                    <p style="margin-left: 27px">Date of return _________________________</p>
+                    <b style="width: 20px; height: 20px; border: solid 1px #000; float: left; margin-right: 7px"></b><b>Reshelve</b>
+                    <p style="margin-left: 27px">Today's date ___________________________</p>
+                    <p style="margin-left: 27px">Staff initials ____________________________</p>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+

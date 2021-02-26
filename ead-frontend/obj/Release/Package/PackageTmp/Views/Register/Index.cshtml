@@ -1,0 +1,103 @@
+﻿@model ead_frontend.Models.RegisterIndexVm
+@{
+    ViewBag.Title = "Registration";
+    Layout = "../Shared/_RequestLayout.cshtml";
+}
+
+<h2>Joyner Special Collections Research Room Registration</h2>
+<small><span class="text-danger">*</span> required fields</small>
+<hr />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.first_name) <span class="text-danger">*</span>
+        @Html.EditorFor(model => model.Register.first_name, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+        @Html.ValidationMessageFor(model => model.Register.first_name, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.last_name) <span class="text-danger">*</span>
+        @Html.EditorFor(model => model.Register.last_name, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+        @Html.ValidationMessageFor(model => model.Register.last_name, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.email) <span class="text-danger">*</span>
+        @Html.EditorFor(model => model.Register.email, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+        @Html.ValidationMessageFor(model => model.Register.email, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.phone) <span class="text-danger">*</span>
+        @Html.EditorFor(model => model.Register.phone, new { htmlAttributes = new { @class = "form-control col-md-6", @placeholder = "###-###-####" } })
+        @Html.ValidationMessageFor(model => model.Register.phone, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.address)
+        @Html.EditorFor(model => model.Register.address, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.city_town)
+        @Html.EditorFor(model => model.Register.city_town, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.state_province)
+        @Html.EditorFor(model => model.Register.state_province, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.zip_code)
+        @Html.EditorFor(model => model.Register.zip_code, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.country)
+        @Html.EditorFor(model => model.Register.country, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.research_topics)
+        @Html.EditorFor(model => model.Register.research_topics, new { htmlAttributes = new { @class = "form-control col-md-6" } })
+        <small class="font-italic text-secondary">For internal use only (this information will not be shared)</small>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Register.how_found)  <span class="text-danger">*</span>
+        <div>
+            @Html.DropDownListFor(model => model.Register.how_found, Model.HowFound, "-- Choose One --", new { @class = "form-control col-md-4" })
+            @Html.ValidationMessageFor(model => model.Register.how_found, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group form-check pl-0">
+        @*<input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>*@
+
+        @Html.CheckBoxFor(model => model.Register.regulation_agreement, new { htmlAttributes = new { @class = "form-check-input" } })
+        <span>I have read the <a href="@Url.Action("Regulations")" target="_blank">Research Room Regulations</a> and agree to abide by its terms. *</span>
+        @Html.ValidationMessageFor(model => model.Register.regulation_agreement, "", new { @class = "text-danger d-block" })
+    </div>
+
+    <div class="text-center">
+        <input name="action" type="submit" class="btn btn-primary" value="Submit Registration" />
+    </div>
+    <hr />
+    <p class="small">
+        * We may retain information we collect from you in connection with your use of the Special Collections Request
+        System indefinitely. We limit the number of personnel who can access your information and will use your personally
+        identifiable information only to assist you with your research or contact you if necessary. We also use anonymous
+        data to help us understand how our collections are being used. If for any reason you would like us to delete your
+        information from our system, please let us know by email at <a href="mailto:specialcollections@ecu.edu">specialcollections@ecu.edu</a>.
+    </p>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        // extend jquery range validator to work for required checkboxes
+        var defaultRangeValidator = $.validator.methods.range;
+        $.validator.methods.range = function (value, element, param) {
+            if (element.type === 'checkbox') {
+                // if it's a checkbox return true if it is checked
+                return element.checked;
+            } else {
+                // otherwise run the default validation function
+                return defaultRangeValidator.call(this, value, element, param);
+            }
+        }
+    </script>
+}

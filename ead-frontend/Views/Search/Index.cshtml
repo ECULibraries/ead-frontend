@@ -1,0 +1,380 @@
+﻿@using System.Text.RegularExpressions
+@model ead_frontend.Models.SearchModel
+@{
+    ViewBag.Title = "Search";
+}
+
+<h2>Search</h2>
+<hr />
+@using (Html.BeginForm("Route", "Search", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-none d-md-block d-lg-block">
+                <div class="input-group">
+                    <input name="q" id="q" class="form-control col-md-6" type="search" placeholder="Search Collection Guides" aria-label="Search Collection Guides" autofocus="autofocus">
+                    <div class="input-group-append">
+                        <select id="repo" name="repo" class="input-group-text bg-white">
+                            <option selected="selected">All Repositories</option>
+                            <option>Country Doctor Museum</option>
+                            <option>Laupus Library</option>
+                            <option>Manuscript Collection</option>
+                            <option>University Archives Collection</option>
+                        </select>
+                    </div>
+                    <div class="input-group-append">
+                        <input type="submit" value="Search" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("RouteMobile", "Search", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-md-none d-sm-block">
+                <input type="search" class="form-control mb-1" placeholder="Search Collection Guides" aria-label="Search" name="qm" id="qm">
+                <select id="repom" name="repom" class="input-group-text w-100 bg-white mb-1">
+                    <option selected="selected">All Repositories</option>
+                    <option>Country Doctor Museum</option>
+                    <option>Laupus Library</option>
+                    <option>Manuscript Collection</option>
+                    <option>University Archives Collection</option>
+                </select>
+                <button class="btn btn-primary w-100" type="submit">Search <span class="fa fa-search"></span></button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-md-3 small">
+            @{
+                var currentUrl = Regex.Replace(Request.Url.ToString(), "&pg=[0-9]+", "");
+                var digUrl = currentUrl + "&filter_fields=hasObjects&filter_values=true";
+            }
+            @if (Request.QueryString["filter_values"] != null)
+            {
+                <h4>Filtered By</h4>
+                <ul class="list-unstyled">
+                    @foreach (var filter in Model.Filters)
+                    {
+                        if (filter.Key == "hasObjects")
+                        {
+                            <li class="mb-1">Digitized Content Only <a href="@currentUrl.Replace($"&filter_fields={filter.Key}&filter_values={filter.Value}", "")" class="badge badge-danger">X</a></li>
+                        }
+                        else
+                        {
+                            <li class="mb-1">@filter.Value <a href="@currentUrl.Replace($"&filter_fields={filter.Key}&filter_values={filter.Value}", "")" class="badge badge-danger">X</a></li>
+                        }
+                    }
+                </ul>
+            }
+            <h4>Filter Results</h4>
+
+            <div class="mb-3">
+                @if (!currentUrl.Contains("&filter_fields=hasObjects&filter_values=true"))
+                {
+                    <a href="@digUrl"><i class="fa fa-camera" aria-hidden="true"></i> Only show results with digitized content</a>
+                }
+            </div>
+
+            @if (Model.ObjectResults.FacetFields.ContainsKey("repo") && Model.ObjectResults.FacetFields["repo"].Count > 0)
+            {
+                <label class="font-weight-bold d-block">Repository</label>
+                var repoUrl = currentUrl + "&filter_fields=repo";
+
+                <ul class="list-unstyled">
+                    @foreach (var repo in @Model.ObjectResults.FacetFields["repo"])
+                    {
+                        var url = repoUrl + "&filter_values=" + @repo.Key;
+                        <li>
+                            <a href="@url">@repo.Key</a> <b>@repo.Value</b>
+                        </li>
+                    }
+                </ul>
+            }
+            <h5>Subjects</h5>
+            @if (Model.ObjectResults.FacetFields.ContainsKey("persname") && Model.ObjectResults.FacetFields["persname"].Count > 0)
+            {
+                <label class="font-weight-bold d-block">Name</label>
+                var persnameUrl = currentUrl + "&filter_fields=persname";
+
+                var cast = Model.ObjectResults.FacetFields["persname"] as List<KeyValuePair<string, int>>;
+                if (cast.Count > 5)
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var repo in cast.Take(5))
+                        {
+                            var url = persnameUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                    <div class="collapse" id="collapseName">
+                        <ul class="list-unstyled mb-1">
+                            @foreach (var repo in cast.Skip(5))
+                            {
+                                var url = persnameUrl + "&filter_values=" + @repo.Key;
+                                <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                            }
+                        </ul>
+                    </div>
+                    <a class="collapsed" data-toggle="collapse" href="#collapseName" role="button" aria-expanded="false" aria-controls="collapseName" aria-label="View More">
+                        <i class="fa fa-caret-square-o-down" aria-hidden="true"></i> more
+                    </a>
+                }
+                else
+                {
+                    <ul class="list-unstyled">
+                        @foreach (var repo in cast)
+                        {
+                            var url = persnameUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                }
+            }
+            @if (Model.ObjectResults.FacetFields.ContainsKey("corpname") && Model.ObjectResults.FacetFields["corpname"].Count > 0)
+            {
+                <label class="font-weight-bold d-block mt-3 mb-0">Corporate</label>
+                var corpnameUrl = currentUrl + "&filter_fields=corpname";
+
+                var cast = Model.ObjectResults.FacetFields["corpname"] as List<KeyValuePair<string, int>>;
+                if (cast.Count > 5)
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var repo in cast.Take(5))
+                        {
+                            var url = corpnameUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                    <div class="collapse" id="collapseCorp">
+                        <ul class="list-unstyled mb-1">
+                            @foreach (var repo in cast.Skip(5))
+                            {
+                                var url = corpnameUrl + "&filter_values=" + @repo.Key;
+                                <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                            }
+                        </ul>
+                    </div>
+                    <a class="collapsed" data-toggle="collapse" href="#collapseCorp" role="button" aria-expanded="false" aria-controls="collapseCorp" aria-label="View More">
+                        <i class="fa fa-caret-square-o-down" aria-hidden="true"></i> more
+                    </a>
+                }
+                else
+                {
+                    <ul class="list-unstyled">
+                        @foreach (var repo in cast)
+                        {
+                            var url = corpnameUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                }
+            }
+            @if (Model.ObjectResults.FacetFields.ContainsKey("famname") && Model.ObjectResults.FacetFields["famname"].Count > 0)
+            {
+                <label class="font-weight-bold d-block mt-3 mb-0">Family</label>
+                var famnameUrl = currentUrl + "&filter_fields=famname";
+
+                var cast = Model.ObjectResults.FacetFields["famname"] as List<KeyValuePair<string, int>>;
+                if (cast.Count > 5)
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var repo in cast.Take(5))
+                        {
+                            var url = famnameUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                    <div class="collapse" id="collapseFam">
+                        <ul class="list-unstyled mb-1">
+                            @foreach (var repo in cast.Skip(5))
+                            {
+                                var url = famnameUrl + "&filter_values=" + @repo.Key;
+                                <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                            }
+                        </ul>
+                    </div>
+                    <a class="collapsed" data-toggle="collapse" href="#collapseFam" role="button" aria-expanded="false" aria-controls="collapseFam" aria-label="View More">
+                        <i class="fa fa-caret-square-o-down" aria-hidden="true"></i> more
+                    </a>
+                }
+                else
+                {
+                    <ul class="list-unstyled">
+                        @foreach (var repo in cast)
+                        {
+                            var url = famnameUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                }
+            }
+            @if (Model.ObjectResults.FacetFields.ContainsKey("topic") && Model.ObjectResults.FacetFields["topic"].Count > 0)
+            {
+                <label class="font-weight-bold d-block mt-3 mb-0">Topic</label>
+                var topicUrl = currentUrl + "&filter_fields=topic";
+
+                var cast = Model.ObjectResults.FacetFields["topic"] as List<KeyValuePair<string, int>>;
+                if (cast.Count > 5)
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var repo in cast.Take(5))
+                        {
+                            var url = topicUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                    <div class="collapse" id="collapseTopic">
+                        <ul class="list-unstyled mb-1">
+                            @foreach (var repo in cast.Skip(5))
+                            {
+                                var url = topicUrl + "&filter_values=" + @repo.Key;
+                                <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                            }
+                        </ul>
+                    </div>
+                    <a class="collapsed" data-toggle="collapse" href="#collapseTopic" role="button" aria-expanded="false" aria-controls="collapseTopic" aria-label="View More">
+                        <i class="fa fa-caret-square-o-down" aria-hidden="true"></i> more
+                    </a>
+                }
+                else
+                {
+                    <ul class="list-unstyled">
+                        @foreach (var repo in cast)
+                        {
+                            var url = topicUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                }
+            }
+            @if (Model.ObjectResults.FacetFields.ContainsKey("geogname") && Model.ObjectResults.FacetFields["geogname"].Count > 0)
+            {
+                <label class="font-weight-bold d-block mt-3 mb-0">Place</label>
+                var geoUrl = currentUrl + "&filter_fields=topic";
+
+                var cast = Model.ObjectResults.FacetFields["geogname"] as List<KeyValuePair<string, int>>;
+                if (cast.Count > 5)
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var repo in cast.Take(5))
+                        {
+                            var url = geoUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                    <div class="collapse" id="collapseGeo">
+                        <ul class="list-unstyled mb-1">
+                            @foreach (var repo in cast.Skip(5))
+                            {
+                                var url = geoUrl + "&filter_values=" + @repo.Key;
+                                <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                            }
+                        </ul>
+                    </div>
+                    <a class="collapsed" data-toggle="collapse" href="#collapseGeo" role="button" aria-expanded="false" aria-controls="collapseGeo" aria-label="View More">
+                        <i class="fa fa-caret-square-o-down" aria-hidden="true"></i> more
+                    </a>
+                }
+                else
+                {
+                    <ul class="list-unstyled">
+                        @foreach (var repo in cast)
+                        {
+                            var url = geoUrl + "&filter_values=" + @repo.Key;
+                            <li><a href="@url">@repo.Key</a> <b>@repo.Value</b></li>
+                        }
+                    </ul>
+                }
+            }
+        </div>
+        <div class="col-md-9">
+            <h2>@Model.TotalResults results for @Model.Keywords</h2>
+            <em>Currently viewing results @((Model.PageNumber * 15) - 14) - @((Model.PageNumber * 15) >= Model.TotalResults ? Model.TotalResults : (Model.PageNumber * 15))</em>
+            <hr />
+            @if (Model.TotalResults > 15)
+            {
+                <table class="mb-3">
+                    <tr>
+                        <td class="pr-4">
+                            @if (Model.PageNumber > 1)
+                            {
+                                <a href="@Url.Action("Index", "Search", new { utf8 = "✓", q = Model.Keywords, pg = Model.PageNumber - 1 })@ViewBag.FilterQueryString" class="btn btn-outline-primary float-right ml-2"><i class="fa fa-caret-left" aria-hidden="true"></i> Previous</a>
+                            }
+                        </td>
+                        <td style="max-width: 200px" class="pr-4">
+                            <form action="@Url.Action("Index", "Search", new { utf8 = "✓", q = Model.Keywords, pg = Model.PageNumber - 1 })@ViewBag.FilterQueryString" method="post">
+                                <b>PAGE</b>
+                                <input type="text" class="form-control d-inline" style="max-width: 50px" aria-label="Page" aria-describedby="basic-addon2" name="pg" id="pg" value="@Model.PageNumber">
+                                <b>OF @((Model.TotalResults + Model.ResultsPerPage - 1) / Model.ResultsPerPage)</b>
+                            </form>
+                        </td>
+                        <td>
+                            @if (Model.PageNumber < (Model.TotalResults + Model.ResultsPerPage - 1) / Model.ResultsPerPage)
+                            {
+                                <a href="@Url.Action("Index", "Search", new { utf8 = "✓", q = Model.Keywords, pg = Model.PageNumber + 1 })@ViewBag.FilterQueryString" class="btn btn-outline-primary ml-2">Next <i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            }
+            @foreach (var result in Model.ObjectResults)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted small">#@result.EadId</h6>
+                        <h5 class="card-title">
+                            @if (result.DigitizedItems)
+                            {
+                                <i class="fa fa-camera text-muted" aria-hidden="true" title="Contains digitized content"></i>
+                            }
+                            <a href="@Url.Action("Index", "Guide", new {eadid = result.EadId, q = Request.QueryString["q"]})">@result.Title</a>
+                        </h5>
+                        @if (@result.Abstract != "no content")
+                        {
+                            <p class="card-text">@result.Abstract</p>
+                        }
+                    </div>
+                </div>
+            }
+            @if (Model.TotalResults > 15)
+            {
+                <table class="mb-3">
+                    <tr>
+                        <td class="pr-4">
+                            @if (Model.PageNumber > 1)
+                            {
+                                <a href="@Url.Action("Index", "Search", new { utf8 = "✓", q = Model.Keywords, pg = Model.PageNumber - 1 })@ViewBag.FilterQueryString" class="btn btn-outline-primary float-right ml-2"><i class="fa fa-caret-left" aria-hidden="true"></i> Previous</a>
+                            }
+                        </td>
+                        <td style="max-width: 200px" class="pr-4">
+                            <form action="@Url.Action("Index", "Search", new { utf8 = "✓", q = Model.Keywords, pg = Model.PageNumber - 1 })@ViewBag.FilterQueryString" method="post">
+                                <b>PAGE</b>
+                                <input type="text" class="form-control d-inline" style="max-width: 50px" aria-label="Page" aria-describedby="basic-addon2" name="pg" id="pg" value="@Model.PageNumber">
+                                <b>OF @((Model.TotalResults + Model.ResultsPerPage - 1) / Model.ResultsPerPage)</b>
+                            </form>
+                        </td>
+                        <td>
+                            @if (Model.PageNumber < (Model.TotalResults + Model.ResultsPerPage - 1) / Model.ResultsPerPage)
+                            {
+                                <a href="@Url.Action("Index", "Search", new { utf8 = "✓", q = Model.Keywords, pg = Model.PageNumber + 1 })@ViewBag.FilterQueryString" class="btn btn-outline-primary ml-2">Next <i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+    </div>
+}
+
+
+
